@@ -1,111 +1,95 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
+
 const navLinks = [
-    { name: "About", href: "/about" },
-    { name: "Speakers", href: "/speakers" },
-    { name: "Schedule", href: "/event" },
-    { name: "Team", href: "/team" },
+  { name: "About", href: "/about" },
+  { name: "Speakers", href: "/speakers" },
+  { name: "Schedule", href: "/event" },
+  { name: "Team", href: "/team" },
 ];
 
-export default function Navbar() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const pathname = usePathname();
+export default function Navbar({ scrolled }: { scrolled: boolean }) {
+  const pathname = usePathname();
 
-    // Handle scroll effect for a cleaner look on white backgrounds
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    return (
-        <nav
-            className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${scrolled ? "bg-black/90 backdrop-blur-md py-3" : "bg-transparent py-5"
-                }`}
-        >
-            <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-
-                {/* Logo */}
-                <Link href="/" className="group flex items-center gap-1">
-                    <Image
-                        src="/logo-white.png" // Replace with your actual filename (e.g., logo.svg, logo.png)
-                        alt="TEDxYourCollege Logo"
-                        width={260}  // Adjust based on your logo's aspect ratio
-                        height={40}  // Adjust based on your logo's aspect ratio
-                        priority     // Tells Next.js to load this immediately (no lazy loading for logos)
-                        className="h-20 w-auto object-contain"
-                    />
-                </Link>
-
-                {/* Desktop Menu */}
-                <div className="hidden md:flex items-center gap-10">
-                    <div className="flex gap-8">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className={`text-sm font-medium uppercase tracking-widest transition-colors hover:text-red-600 ${pathname === link.href ? "text-red-600" : "text-white/70"
-                                    }`}
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
-                    </div>
-
-                    <Link
-                        href="/register"
-                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 text-xs font-bold uppercase tracking-widest transition-all hover:tracking-[0.15em] active:scale-95"
-                    >
-                        Register Now
-                    </Link>
-                </div>
-
-                {/* Mobile Toggle */}
-                <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 z-50 focus:outline-none"
+  return (
+    <nav
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-700 ease-in-out ${
+        scrolled
+          ? "bg-black/85 backdrop-blur-xl py-3 border-b border-white/5"
+          : "bg-transparent py-8"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+        
+        {/* Logo Slot */}
+        <div className="flex-1 flex items-center min-h-[52px]">
+          <AnimatePresence mode="popLayout">
+            {scrolled && (
+              <motion.div
+                layout
+                layoutId="tedx-logo"
+                initial={{ scale: 0.96 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.96, opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 120,
+                  damping: 20,
+                  mass: 0.6,
+                }}
+                className="origin-left"
+              >
+                <Link
+                  href="/"
+                  className="inline-flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
                 >
-                    <span className={`h-0.5 w-6 bg-white transition-all ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
-                    <span className={`h-0.5 w-6 bg-white transition-all ${isOpen ? "opacity-0" : ""}`} />
-                    <span className={`h-0.5 w-6 bg-white transition-all ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-                </button>
-            </div>
+                  <Image
+                    src="/logo-white.png"
+                    alt="TEDxAmritapuri Logo"
+                    width={160}
+                    height={36}
+                    className="h-10 w-auto object-contain"
+                    priority={false}
+                  />
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-            {/* Mobile Menu Overlay */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="fixed inset-0 bg-black flex flex-col items-center justify-center gap-8 md:hidden z-40"
-                    >
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                onClick={() => setIsOpen(false)}
-                                className="text-3xl font-bold uppercase tracking-tighter hover:text-red-600 transition-colors"
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
-                        <Link
-                            href="/register"
-                            onClick={() => setIsOpen(false)}
-                            className="mt-4 bg-red-600 text-white px-10 py-4 font-black uppercase tracking-widest"
-                        >
-                            Get Tickets
-                        </Link>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </nav>
-    );
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-10">
+          <div className="flex gap-8">
+            {navLinks.map((link) => {
+              const active = pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`text-xs font-bold uppercase tracking-[0.22em] transition-colors duration-300 ${
+                    active
+                      ? "text-red-600"
+                      : "text-white/70 hover:text-red-600"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+          </div>
+
+          <Link
+            href="/register"
+            className="bg-red-600 hover:bg-white hover:text-black text-white px-6 py-2.5 text-xs font-bold uppercase tracking-[0.25em] transition-all duration-300 active:scale-95 focus-visible:ring-2 focus-visible:ring-red-600"
+          >
+            Get Tickets
+          </Link>
+        </div>
+      </div>
+    </nav>
+  );
 }

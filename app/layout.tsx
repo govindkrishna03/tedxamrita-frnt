@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black text-white antialiased">
-        <Navbar />
+        <Navbar scrolled={false} />
         <div className="pt-20">{children}</div>
       </body>
     </html>
